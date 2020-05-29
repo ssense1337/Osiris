@@ -25,10 +25,15 @@ jobs:
     - name: Build
       shell: cmd
       run: '"%MSBUILD_PATH%\MSBuild.exe" Osiris/Osiris.vcxproj /p:Platform=Win32 /p:Configuration=Release'
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2
+    # Upload DLL to Release
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: gfreezy/upload-release-asset@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        # Artifact name
-        name: Osiris.dll # optional
-        # A file, directory or wildcard pattern that describes what to upload
-        path: Osiris\Release\Osiris.dll
+        release_id: 27017267
+        upload_url: https://uploads.github.com/repos/NetnetZ/Osiris/releases/27017267/assets{?name,label}
+        asset_path: Osiris\Release\Osiris.dll
+        asset_name: Osiris.dll
+        asset_content_type: application/x-msdownload
