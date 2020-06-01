@@ -126,7 +126,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDK\Entity.cpp">
-      <Filter>SDK</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
