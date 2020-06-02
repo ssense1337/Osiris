@@ -206,7 +206,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Enabled", &config->aimbot[currentWeapon].enabled);
     ImGui::Separator();
     ImGui::Columns(2, nullptr, false);
-    ImGui::SetColumnOffset(125.0f, 300.0f);
+    ImGui::SetColumnOffset(125, 300.0f);
     ImGui::Checkbox("On key", &config->aimbot[currentWeapon].onKey);
     ImGui::SameLine();
     hotkey(config->aimbot[currentWeapon].key);
@@ -427,7 +427,7 @@ void GUI::renderGlowWindow(bool contentOnly) noexcept
     ImGui::Checkbox("Enabled", &config->glow[currentItem].enabled);
     ImGui::Separator();
     ImGui::Columns(2, nullptr, false);
-    ImGui::SetColumnOffset(125.0f, 300.0f);
+    ImGui::SetColumnOffset(125, 300.0f);
     ImGui::Checkbox("Health based", &config->glow[currentItem].healthBased);
 
     ImGuiCustom::colorPicker("Color", config->glow[currentItem].color.color, nullptr, &config->glow[currentItem].color.rainbow, &config->glow[currentItem].color.rainbowSpeed);
@@ -725,7 +725,7 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
         ImGui::Begin("Visuals", &window.visuals, windowFlags);
     }
     ImGui::Columns(2, nullptr, false);
-    ImGui::SetColumnOffset(125.0f, 300.0f);
+    ImGui::SetColumnOffset(125, 300.0f);
     ImGui::Combo("T Player Model", &config->visuals.playerModelT, "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0");
     ImGui::Combo("CT Player Model", &config->visuals.playerModelCT, "Default\0Special Agent Ava | FBI\0Operator | FBI SWAT\0Markus Delrow | FBI HRT\0Michael Syfers | FBI Sniper\0B Squadron Officer | SAS\0Seal Team 6 Soldier | NSWC SEAL\0Buckshot | NSWC SEAL\0Lt. Commander Ricksaw | NSWC SEAL\0Third Commando Company | KSK\0'Two Times' McCoy | USAF TACP\0Dragomir | Sabre\0Rezan The Ready | Sabre\0'The Doctor' Romanov | Sabre\0Maximus | Sabre\0Blackwolf | Sabre\0The Elite Mr. Muhlik | Elite Crew\0Ground Rebel | Elite Crew\0Osiris | Elite Crew\0Prof. Shahmat | Elite Crew\0Enforcer | Phoenix\0Slingshot | Phoenix\0Soldier | Phoenix\0");
     ImGui::Checkbox("Disable post-processing", &config->visuals.disablePostProcessing);
@@ -975,7 +975,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
         ImGui::Begin("Misc", &window.misc, windowFlags);
     }
     ImGui::Columns(2, nullptr, false);
-    ImGui::SetColumnOffset(125.0f, 300.0f);
+    ImGui::SetColumnOffset(125, 300.0f);
     ImGui::TextUnformatted("Menu key");
     ImGui::SameLine();
     hotkey(config->misc.menuKey);
@@ -1133,7 +1133,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
     }
 
     ImGui::Columns(2, nullptr, false);
-    ImGui::SetColumnOffset(125.0f, 300.0f);
+    ImGui::SetColumnOffset(125, 300.0f);
 
 
     if (ImGui::Button("Reload configs", { 160.0f, 25.0f }))
@@ -1252,13 +1252,13 @@ void GUI::renderGuiStyle2() noexcept
             if (tabb == ARRAYSIZE(tabbname) - 1) {
                 ImGui::SameLine();
                 ImGui::PushStyleColor(ImGuiCol_Button, colors[ImGuiCol_ButtonActive]);
-                if (ImGui::Button(tabbname[ARRAYSIZE(tabbname) - 1], ImVec2(ImGui::GetWindowSize().x / (ARRAYSIZE(tabbname)) - 44.5, ImGui::GetWindowSize().y / 8)))
+                if (ImGui::Button(tabbname[ARRAYSIZE(tabbname) - 1], ImVec2(ImGui::GetWindowSize().x / (ARRAYSIZE(tabbname)) - 44.5f, ImGui::GetWindowSize().y / 8)))
                     tabb = ARRAYSIZE(tabbname) - 1;
                 ImGui::PopStyleColor();
             }
             else {
                 ImGui::SameLine();
-                if (ImGui::Button(tabbname[ARRAYSIZE(tabbname) - 1], ImVec2(ImGui::GetWindowSize().x / (ARRAYSIZE(tabbname)) - 44.5, ImGui::GetWindowSize().y / 8)))
+                if (ImGui::Button(tabbname[ARRAYSIZE(tabbname) - 1], ImVec2(ImGui::GetWindowSize().x / (ARRAYSIZE(tabbname)) - 44.5f, ImGui::GetWindowSize().y / 8)))
                     tabb = ARRAYSIZE(tabbname) - 1;
             }
             ImGui::PopFont();
