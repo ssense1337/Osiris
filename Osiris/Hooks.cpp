@@ -233,7 +233,7 @@ static void __stdcall drawModelExecute(void* ctx, void* state, const ModelRender
     static Chams chams;
     if (chams.render(ctx, state, info, customBoneToWorld))
         hooks->modelRender.callOriginal<void, 21>(ctx, state, std::cref(info), customBoneToWorld);
-    interfaces->studioRender->forcedMaterialOverride(nullptr);  
+    interfaces->studioRender->forcedMaterialOverride(nullptr);
 }
 
 static bool __stdcall svCheatsGetBool() noexcept
@@ -250,7 +250,7 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
         Esp::render();
         Misc::drawBombTimer();
         Misc::spectatorList();
-        Misc::watermark();        
+        Misc::watermark();
         Visuals::hitMarker();
     }
     hooks->panel.callOriginal<void, 41>(panel, forceRepaint, allowForce);
@@ -339,7 +339,20 @@ static void __stdcall lockCursor() noexcept
 static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
 {
     auto returnAddress = reinterpret_cast<uintptr_t>(_ReturnAddress());
-    if (config->visuals.noScopeOverlay && (returnAddress == memory->scopeArc || returnAddress == memory->scopeLens))
+
+#ifdef _DEBUG
+    // Check if we always get the same return address
+    if (*static_cast<std::uint32_t*>(_ReturnAddress()) == 0x20244C8B) {
+        static const auto returnAddress = std::uintptr_t(_ReturnAddress());
+        assert(returnAddress == std::uintptr_t(_ReturnAddress()));
+    }
+    if (*reinterpret_cast<std::uint32_t*>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF) {
+        static const auto returnAddress = std::uintptr_t(_ReturnAddress());
+        assert(returnAddress == std::uintptr_t(_ReturnAddress()));
+    }
+#endif
+
+    if (config->visuals.noScopeOverlay && (*static_cast<std::uint32_t*>(_ReturnAddress()) == 0x20244C8B || *reinterpret_cast<std::uint32_t*>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF))
         a = 0;
     hooks->surface.callOriginal<void, 15>(r, g, b, a);
 }
@@ -355,7 +368,7 @@ static bool __stdcall fireEventClientSide(GameEvent* event) noexcept
             break;
         case fnv::hash("player_hurt"):
             Misc::playHitSound(*event);
-            Visuals::hitEffect(event);                
+            Visuals::hitEffect(event);
             Visuals::hitMarker(event);
             break;
         }
@@ -445,7 +458,15 @@ static DemoPlaybackParameters* __stdcall getDemoPlaybackParameters() noexcept
 {
     const auto params = hooks->engine.callOriginal<DemoPlaybackParameters*, 218>();
 
-    if (params && config->misc.revealSuspect && *static_cast<std::uintptr_t*>(_ReturnAddress()) != 0xC985C88B)  // client.dll : 8B C8 85 C9 74 1F 80 79 10 00
+#ifdef _DEBUG
+    // Check if we always get the same return address
+    if (*static_cast<std::uint64_t*>(_ReturnAddress()) == 0x79801F74C985C88B) {
+        static const auto returnAddress = std::uintptr_t(_ReturnAddress());
+        assert(returnAddress == std::uintptr_t(_ReturnAddress()));
+    }
+#endif
+
+    if (params && config->misc.revealSuspect && *static_cast<std::uint64_t*>(_ReturnAddress()) != 0x79801F74C985C88B) // client.dll : 8B C8 85 C9 74 1F 80 79 10 00 , there game decides whether to show overwatch panel
         params->anonymousPlayerIdentity = false;
 
     return params;
@@ -453,8 +474,17 @@ static DemoPlaybackParameters* __stdcall getDemoPlaybackParameters() noexcept
 
 static bool __stdcall isPlayingDemo() noexcept
 {
+#ifdef _DEBUG
+    // Check if we always get the same return address
+    if (*static_cast<std::uintptr_t*>(_ReturnAddress()) == 0x0975C084
+        && **reinterpret_cast<std::uintptr_t**>(std::uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084) {
+        static const auto returnAddress = std::uintptr_t(_ReturnAddress());
+        assert(returnAddress == std::uintptr_t(_ReturnAddress()));
+    }
+#endif
+
     if (config->misc.revealMoney
-        && *static_cast<uintptr_t*>(_ReturnAddress()) == 0x0975C084  // client.dll : 84 C0 75 09 38 05
+        && *static_cast<uintptr_t*>(_ReturnAddress()) == 0x0975C084 // client.dll : 84 C0 75 09 38 05
         && **reinterpret_cast<uintptr_t**>(uintptr_t(_AddressOfReturnAddress()) + 4) == 0x0C75C084) { // client.dll : 84 C0 75 0C 5B
         return true;
     }
@@ -505,7 +535,8 @@ Hooks::Hooks(HMODULE module) noexcept
     interfaces = std::make_unique<const Interfaces>();
     memory = std::make_unique<const Memory>();
 
-    originalWndProc = WNDPROC(SetWindowLongPtrA(FindWindowW(L"Valve001", nullptr), GWLP_WNDPROC, LONG_PTR(wndProc)));
+    window = FindWindowW(L"Valve001", nullptr);
+    originalWndProc = WNDPROC(SetWindowLongPtrA(window, GWLP_WNDPROC, LONG_PTR(wndProc)));
 }
 
 void Hooks::install() noexcept
@@ -516,7 +547,7 @@ void Hooks::install() noexcept
     **reinterpret_cast<decltype(present)***>(memory->present) = present;
     originalReset = **reinterpret_cast<decltype(originalReset)**>(memory->reset);
     **reinterpret_cast<decltype(reset)***>(memory->reset) = reset;
-    
+
     bspQuery.init(interfaces->engine->getBSPTreeQuery());
     client.init(interfaces->client);
     clientMode.init(memory->clientMode);
@@ -594,7 +625,7 @@ void Hooks::uninstall() noexcept
 
     Glow::clearCustomObjects();
 
-    SetWindowLongPtrA(FindWindowW(L"Valve001", nullptr), GWLP_WNDPROC, LONG_PTR(originalWndProc));
+    SetWindowLongPtrA(window, GWLP_WNDPROC, LONG_PTR(originalWndProc));
     **reinterpret_cast<void***>(memory->present) = originalPresent;
     **reinterpret_cast<void***>(memory->reset) = originalReset;
 
