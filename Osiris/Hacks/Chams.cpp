@@ -74,19 +74,13 @@ Chams::Chams() noexcept
 
 bool Chams::render(void* ctx, void* state, const ModelRenderInfo& info, matrix3x4* customBoneToWorld) noexcept
 {
-    const std::string_view modelName = info.model->name;
-
     appliedChams = false;
     this->ctx = ctx;
     this->state = state;
     this->info = &info;
     this->customBoneToWorld = customBoneToWorld;
 
-    if (modelName.starts_with("models/player")) {
-        const auto entity = interfaces->entityList->getEntity(info.entityIndex);
-        if (entity && !entity->isDormant() && entity->isPlayer())
-            renderPlayer(entity);
-    } else if (modelName.starts_with("models/weapons/v_")) {
+    if (std::string_view{ info.model->name }.starts_with("models/weapons/v_")) {
         // info.model->name + 17 -> small optimization, skip "models/weapons/v_"
         if (std::strstr(info.model->name + 17, "sleeve"))
             renderSleeves();
@@ -96,6 +90,10 @@ bool Chams::render(void* ctx, void* state, const ModelRenderInfo& info, matrix3x
             && !std::strstr(info.model->name + 17, "parachute")
             && !std::strstr(info.model->name + 17, "fists"))
             renderWeapons();
+    } else {
+        const auto entity = interfaces->entityList->getEntity(info.entityIndex);
+        if (entity && !entity->isDormant() && entity->isPlayer())
+            renderPlayer(entity);
     }
 
     return appliedChams;
@@ -108,13 +106,13 @@ void Chams::renderPlayer(Entity* player) noexcept
 
     const auto health = player->health();
 
-    if (const auto activeWeapon = player->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::C4 && activeWeapon->c4StartedArming()) {
+    if (const auto activeWeapon = player->getActiveWeapon(); activeWeapon && activeWeapon->getClientClass()->classId == ClassId::C4 && activeWeapon->c4StartedArming() && std::any_of(config->chams[PLANTING].materials.cbegin(), config->chams[PLANTING].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; })) {
         applyChams(config->chams[PLANTING].materials, health);
-    } else if (player->isDefusing()) {
+    } else if (player->isDefusing() && std::any_of(config->chams[DEFUSING].materials.cbegin(), config->chams[DEFUSING].materials.cend(), [](const Config::Chams::Material& mat) { return mat.enabled; })) {
         applyChams(config->chams[DEFUSING].materials, health);
     } else if (player == localPlayer.get()) {
         applyChams(config->chams[LOCALPLAYER].materials, health);
-    } else if (player->isOtherEnemy(localPlayer.get())) {
+    } else if (localPlayer->isOtherEnemy(player)) {
         applyChams(config->chams[ENEMIES].materials, health);
 
         if (config->backtrack.enabled) {
