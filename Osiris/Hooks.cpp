@@ -71,14 +71,25 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
         gui->open = !gui->open;
         if (!gui->open) {
             // ImGui::GetIO().MouseDown[0] = false;
-            interfaces->inputSystem->resetInputState();
+            //interfaces->inputSystem->resetInputState();
         }
     }
 
     LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     ImGui_ImplWin32_WndProcHandler(window, msg, wParam, lParam);
 
-    interfaces->inputSystem->enableInput(!gui->open);
+    if (gui->open) {
+        ImGuiIO& io = ImGui::GetIO();
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseDown(ImGuiMouseButton_Right) || io.MouseWheel || io.WantCaptureKeyboard) {
+            interfaces->inputSystem->enableInput(false);
+        }
+        else {
+            interfaces->inputSystem->enableInput(true);
+        }
+    }
+    else {
+        interfaces->inputSystem->enableInput(true);
+    }
 
     return CallWindowProcW(hooks->originalWndProc, window, msg, wParam, lParam);
 }
