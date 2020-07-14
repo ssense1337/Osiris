@@ -52,6 +52,7 @@ private:
     struct {
         ImFont* tahoma = nullptr;
         ImFont* segoeui = nullptr;
+        ImFont* astriumtabs = nullptr;
     } fonts;
 };
 
