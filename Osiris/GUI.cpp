@@ -39,9 +39,18 @@ GUI::GUI() noexcept
         const std::filesystem::path path{ pathToFonts };
         CoTaskMemFree(pathToFonts);
 
-        static constexpr ImWchar ranges[]{ 0x0020, 0xFFFF, 0 };
         ImFontConfig cfg;
         cfg.OversampleV = 3;
+
+        static ImVector<ImWchar> ranges;
+        ImFontGlyphRangesBuilder builder;
+
+        constexpr ImWchar latinExtended[]{ 0x0100, 0x024F, 0 };
+        builder.AddRanges(latinExtended);
+        builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
+        builder.AddRanges(io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+        builder.AddText("\u9F8D\u738B\u2122");
+        builder.BuildRanges(&ranges);
 
         fonts.tahoma = io.Fonts->AddFontFromMemoryCompressedTTF(&CaviarDreamsNotoSansLight_compressed_data, CaviarDreamsNotoSansLight_compressed_size, 15.0f, &cfg, ranges);
         fonts.segoeui = io.Fonts->AddFontFromMemoryCompressedTTF(&CaviarDreamsNotoSansLight_compressed_data, CaviarDreamsNotoSansLight_compressed_size, 15.0f, &cfg, ranges);
@@ -1531,7 +1540,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
             ImGui::OpenPopup("Config to reset");
 
         if (ImGui::BeginPopup("Config to reset")) {
-            static constexpr const char* names[]{ "Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti aim", "Glow", "Chams", "Esp", "Visuals", "Skin changer", "Sound", "Style", "Misc", "Reportbot" };
+            static constexpr const char* names[]{ "Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti aim", "Glow", "Chams", "Esp", "Stream Proof ESP", "Visuals", "Skin changer", "Sound", "Style", "Misc", "Reportbot" };
             for (int i = 0; i < IM_ARRAYSIZE(names); i++) {
                 if (i == 1) ImGui::Separator();
 
@@ -1545,12 +1554,13 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
                     case 5: config->glow = { }; break;
                     case 6: config->chams = { }; break;
                     case 7: config->esp = { }; break;
-                    case 8: config->visuals = { }; break;
-                    case 9: config->skinChanger = { }; SkinChanger::scheduleHudUpdate(); break;
-                    case 10: config->sound = { }; break;
-                    case 11: config->style = { }; updateColors(); break;
-                    case 12: config->misc = { };  Misc::updateClanTag(true); break;
-                    case 13: config->reportbot = { }; break;
+                    case 8: config->streamProofESP = { }; break;
+                    case 9: config->visuals = { }; break;
+                    case 10: config->skinChanger = { }; SkinChanger::scheduleHudUpdate(); break;
+                    case 11: config->sound = { }; break;
+                    case 12: config->style = { }; updateColors(); break;
+                    case 13: config->misc = { };  Misc::updateClanTag(true); break;
+                    case 14: config->reportbot = { }; break;
                     }
                 }
             }
