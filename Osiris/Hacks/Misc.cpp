@@ -76,32 +76,36 @@ void Misc::inverseRagdollGravity() noexcept
 
 void Misc::updateClanTag(bool tagChanged) noexcept
 {
+    static std::string clanTag;
+
+    if (tagChanged) {
+        clanTag = config->misc.clanTag;
+        if (!isblank(clanTag.front()) && !isblank(clanTag.back()))
+            clanTag.push_back(' ');
+    }
+
+    static auto lastTime = 0.0f;
+
     if (config->misc.clocktag) {
+        if (memory->globalVars->realtime - lastTime < 1.0f)
+            return;
+
         const auto time = std::time(nullptr);
         const auto localTime = std::localtime(&time);
         char s[11];
         s[0] = '\0';
         sprintf_s(s, "[%02d:%02d:%02d]", localTime->tm_hour, localTime->tm_min, localTime->tm_sec);
+        lastTime = memory->globalVars->realtime;
         memory->setClanTag(s, s);
-    }
-
-    if (config->misc.customClanTag) {
-        static std::string clanTag;
-
-        if (tagChanged) {
-            clanTag = config->misc.clanTag;
-            if (!isblank(clanTag.front()) && !isblank(clanTag.back()))
-                clanTag.push_back(' ');
-        }
-
-        static auto lastTime = 0.0f;
+    } else if (config->misc.customClanTag) {
         if (memory->globalVars->realtime - lastTime < 0.6f)
             return;
-        lastTime = memory->globalVars->realtime;
 
+        // TODO: support UTF-8 string rotation
         if (config->misc.animatedClanTag && !clanTag.empty())
             std::rotate(clanTag.begin(), clanTag.begin() + 1, clanTag.end());
 
+        lastTime = memory->globalVars->realtime;
         memory->setClanTag(clanTag.c_str(), clanTag.c_str());
     }
 }
@@ -117,7 +121,7 @@ void Misc::spectatorList() noexcept
     interfaces->surface->setTextFont(Surface::font);
 
     if (config->misc.spectatorList.rainbow)
-        interfaces->surface->setTextColor(rainbowColor(memory->globalVars->realtime, config->misc.spectatorList.rainbowSpeed));
+        interfaces->surface->setTextColor(rainbowColor(config->misc.spectatorList.rainbowSpeed));
     else
         interfaces->surface->setTextColor(config->misc.spectatorList.color);
 
@@ -162,7 +166,7 @@ void Misc::watermark() noexcept
         interfaces->surface->setTextFont(Surface::font);
 
         if (config->misc.watermark.rainbow)
-            interfaces->surface->setTextColor(rainbowColor(memory->globalVars->realtime, config->misc.watermark.rainbowSpeed));
+            interfaces->surface->setTextColor(rainbowColor(config->misc.watermark.rainbowSpeed));
         else
             interfaces->surface->setTextColor(config->misc.watermark.color);
 
@@ -261,7 +265,7 @@ void Misc::drawBombTimer() noexcept
             interfaces->surface->setDrawColor(50, 50, 50);
             interfaces->surface->drawFilledRect(progressBarX - 3, drawPositionY + 2, progressBarX + progressBarLength + 3, drawPositionY + progressBarHeight + 8);
             if (config->misc.bombTimer.rainbow)
-                interfaces->surface->setDrawColor(rainbowColor(memory->globalVars->realtime, config->misc.bombTimer.rainbowSpeed));
+                interfaces->surface->setDrawColor(rainbowColor(config->misc.bombTimer.rainbowSpeed));
             else
                 interfaces->surface->setDrawColor(config->misc.bombTimer.color);
 
@@ -669,13 +673,16 @@ void Misc::purchaseList(GameEvent* event) noexcept
             const auto player = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(event->getInt("userid")));
 
             if (player && localPlayer && memory->isOtherEnemy(player, localPlayer.get())) {
-                if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(event->getString("weapon"))) {
+                const auto weaponName = event->getString("weapon");
+                auto& purchase = purchaseDetails[player->getPlayerName(true)];
+
+                if (const auto definition = memory->itemSystem()->getItemSchema()->getItemDefinitionByName(weaponName)) {
                     if (const auto weaponInfo = memory->weaponSystem->getWeaponInfo(definition->getWeaponId())) {
-                        purchaseDetails[player->getPlayerName(true)].second += weaponInfo->price;
+                        purchase.second += weaponInfo->price;
                         totalCost += weaponInfo->price;
                     }
                 }
-                std::string weapon = event->getString("weapon");
+                std::string weapon = weaponName;
 
                 if (weapon.starts_with("weapon_"))
                     weapon.erase(0, 7);
@@ -683,13 +690,13 @@ void Misc::purchaseList(GameEvent* event) noexcept
                     weapon.erase(0, 5);
 
                 if (weapon.starts_with("smoke"))
-                    weapon = "smoke";
+                    weapon.erase(5);
                 else if (weapon.starts_with("m4a1_s"))
-                    weapon = "m4a1_s";
+                    weapon.erase(6);
                 else if (weapon.starts_with("usp_s"))
-                    weapon = "usp_s";
+                    weapon.erase(5);
 
-                purchaseDetails[player->getPlayerName(true)].first.push_back(weapon);
+                purchase.first.push_back(weapon);
                 ++purchaseTotal[weapon];
             }
             break;
