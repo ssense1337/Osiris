@@ -15,6 +15,7 @@
 #include "Hacks/Misc.h"
 #include "Hacks/Reportbot.h"
 #include "Hacks/SkinChanger.h"
+#include "Helpers.h"
 #include "Hooks.h"
 #include "Interfaces.h"
 #include "SDK/InputSystem.h"
@@ -41,20 +42,10 @@ GUI::GUI() noexcept
 
         ImFontConfig cfg;
         cfg.OversampleV = 3;
-
-        static ImVector<ImWchar> ranges;
-        ImFontGlyphRangesBuilder builder;
-
-        constexpr ImWchar latinExtended[]{ 0x0100, 0x024F, 0 };
-        builder.AddRanges(latinExtended);
-        builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
-        builder.AddRanges(io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
-        builder.AddText("\u9F8D\u738B\u2122");
-        builder.BuildRanges(&ranges);
-
-        fonts.tahoma = io.Fonts->AddFontFromMemoryCompressedTTF(&CaviarDreamsNotoSansLight_compressed_data, CaviarDreamsNotoSansLight_compressed_size, 15.0f, &cfg, ranges);
-        fonts.segoeui = io.Fonts->AddFontFromMemoryCompressedTTF(&CaviarDreamsNotoSansLight_compressed_data, CaviarDreamsNotoSansLight_compressed_size, 15.0f, &cfg, ranges);
-        fonts.astriumtabs = io.Fonts->AddFontFromMemoryCompressedTTF(&Astriumtabs2_compressed_data, Astriumtabs2_compressed_size, 30.0f, &cfg, ranges);
+      
+        fonts.tahoma = io.Fonts->AddFontFromMemoryCompressedTTF(&CaviarDreamsNotoSansLight_compressed_data, CaviarDreamsNotoSansLight_compressed_size, 15.0f, &cfg, Helpers::getFontGlyphRanges());
+        fonts.segoeui = io.Fonts->AddFontFromMemoryCompressedTTF(&CaviarDreamsNotoSansLight_compressed_data, CaviarDreamsNotoSansLight_compressed_size, 15.0f, &cfg, Helpers::getFontGlyphRanges());
+        fonts.astriumtabs = io.Fonts->AddFontFromMemoryCompressedTTF(&Astriumtabs2_compressed_data, Astriumtabs2_compressed_size, 30.0f, &cfg, Helpers::getFontGlyphRanges());
     }
 }
 
@@ -104,7 +95,7 @@ void GUI::renderMenuBar() noexcept
         ImGui::MenuItem("Backtrack", nullptr, &window.backtrack);
         ImGui::MenuItem("Glow", nullptr, &window.glow);
         ImGui::MenuItem("Chams", nullptr, &window.chams);
-        ImGui::MenuItem("Esp", nullptr, &window.esp);
+        // ImGui::MenuItem("Esp", nullptr, &window.esp);
         ImGui::MenuItem("Stream Proof ESP", nullptr, &window.streamProofESP);
         ImGui::MenuItem("Visuals", nullptr, &window.visuals);
         ImGui::MenuItem("Skin changer", nullptr, &window.skinChanger);
@@ -1588,7 +1579,6 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 
 void GUI::renderGuiStyle2() noexcept
 {
-    
     ImGui::SetNextWindowSize(ImVec2(1150, 525), ImGuiCond_FirstUseEver);
     static int iPage1 = 0;
     static int iPage2 = 0;
@@ -1685,7 +1675,7 @@ void GUI::renderGuiStyle2() noexcept
         if (tabb == 1) {
             const char* tabs[] = {
         "Chams",
-        "Esp",
+        "Stream Proof ESP",
         "Glow",
         "Visuals",
         "Skin changer"
@@ -1718,7 +1708,7 @@ void GUI::renderGuiStyle2() noexcept
                 renderChamsWindow(true);
                 break;
             case 1:
-                renderEspWindow(true);
+                renderStreamProofESPWindow(true);
                 break;
             case 2:
                 renderGlowWindow(true);
