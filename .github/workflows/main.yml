@@ -20,6 +20,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    # Build command
+    - name: Build
+      shell: cmd
+      run: '"%MSBUILD_PATH%\MSBuild.exe" Osiris/Osiris.vcxproj /p:Platform=Win32 /p:Configuration=Release'
     # Delete Release and Tag
     - uses: dev-drprasad/delete-tag-and-release@v0.1.2
       with:
@@ -27,10 +31,6 @@ jobs:
         tag_name: thai # tag name to delete
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    # Build command
-    - name: Build
-      shell: cmd
-      run: '"%MSBUILD_PATH%\MSBuild.exe" Osiris/Osiris.vcxproj /p:Platform=Win32 /p:Configuration=Release'
     # Create Release
     - name: Create Release
       id: create_release
