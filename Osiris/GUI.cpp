@@ -1341,8 +1341,8 @@ void GUI::renderGuiStyle2() noexcept
             ImGui::PushFont(fonts.tahoma);
             const char* tabbname[] = {
                 "อัพเดต",
-                "ล็อคเป้า",
-                "มอง",
+                "ช่วยเล็ง",
+                "ช่วยมอง",
                 "ตั้งค่า"
             };
             ImGuiStyle* style = &ImGui::GetStyle();
