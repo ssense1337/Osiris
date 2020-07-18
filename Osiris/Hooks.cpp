@@ -12,6 +12,7 @@
 
 #include "Config.h"
 #include "EventListener.h"
+#include "GameData.h"
 #include "GUI.h"
 #include "Hooks.h"
 #include "Interfaces.h"
@@ -22,7 +23,7 @@
 #include "Hacks/Backtrack.h"
 #include "Hacks/Chams.h"
 #include "Hacks/EnginePrediction.h"
-#include "Hacks/Esp.h"
+#include "Hacks/StreamProofESP.h"
 #include "Hacks/Glow.h"
 #include "Hacks/Misc.h"
 #include "Hacks/Reportbot.h"
@@ -87,10 +88,14 @@ static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, cons
 {
     static bool imguiInit{ ImGui_ImplDX9_Init(device) };
 
+    if (config->loadScheduledFonts())
+        ImGui_ImplDX9_InvalidateDeviceObjects();
+
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    StreamProofESP::render();
     Misc::purchaseList();
 
     if (gui->open)
@@ -135,7 +140,6 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd) noexcept
     Misc::sniperCrosshair();
     Misc::recoilCrosshair();
     Visuals::removeShadows();
-    Visuals::skybox();
     Reportbot::run();
     Misc::bunnyHop(cmd);
     Misc::autoStrafe(cmd);
@@ -188,14 +192,10 @@ static bool __stdcall createMove(float inputSampleTime, UserCmd* cmd) noexcept
 static int __stdcall doPostScreenEffects(int param) noexcept
 {
     if (interfaces->engine->isInGame()) {
-        Visuals::modifySmoke();
         Visuals::thirdperson();
         Misc::inverseRagdollGravity();
-        Visuals::disablePostProcessing();
         Visuals::reduceFlashEffect();
-        Visuals::removeBlur();
         Visuals::updateBrightness();
-        Visuals::removeGrass();
         Visuals::remove3dSky();
         Glow::render();
     }
@@ -238,7 +238,6 @@ static bool __fastcall svCheatsGetBool(void* _this) noexcept
 static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool allowForce) noexcept
 {
     if (interfaces->panel->getName(panel) == "MatSystemTopPanel") {
-        Esp::render();
         Misc::drawBombTimer();
         Misc::spectatorList();
         Misc::watermark();
@@ -254,13 +253,21 @@ static void __stdcall frameStageNotify(FrameStage stage) noexcept
     if (interfaces->engine->isConnected() && !interfaces->engine->isInGame())
         Misc::changeName(true, nullptr, 0.0f);
 
+    if (stage == FrameStage::START)
+        GameData::update();
+
     if (stage == FrameStage::RENDER_START) {
         Misc::disablePanoramablur();
         Visuals::colorWorld();
         Misc::fakePrime();
     }
     if (interfaces->engine->isInGame()) {
+        Visuals::skybox(stage);
+        Visuals::removeBlur(stage);
+        Visuals::removeGrass(stage);
+        Visuals::modifySmoke(stage);
         Visuals::playerModel(stage);
+        Visuals::disablePostProcessing(stage);
         Visuals::removeVisualRecoil(stage);
         Visuals::applyZoom(stage);
         Misc::fixAnimationLOD(stage);
@@ -357,19 +364,6 @@ static void __stdcall setDrawColor(int r, int g, int b, int a) noexcept
     if (config->visuals.noScopeOverlay && (*static_cast<std::uint32_t*>(_ReturnAddress()) == 0x20244C8B || *reinterpret_cast<std::uint32_t*>(std::uintptr_t(_ReturnAddress()) + 6) == 0x01ACB7FF))
         a = 0;
     hooks->surface.callOriginal<void, 15>(r, g, b, a);
-}
-
-static bool __stdcall fireEventClientSide(GameEvent* event) noexcept
-{
-    // TODO: remove this hook after testing the new method of overriding knife icon
-    if (event) {
-        switch (fnv::hashRuntime(event->getName())) {
-        case fnv::hash("player_death"):
-            // SkinChanger::overrideHudIcon(*event);
-            break;
-        }
-    }
-    return hooks->gameEventManager.callOriginal<bool, 9>(event);
 }
 
 struct ViewSetup {
@@ -555,7 +549,6 @@ void Hooks::install() noexcept
     client.init(interfaces->client);
     clientMode.init(memory->clientMode);
     engine.init(interfaces->engine);
-    gameEventManager.init(interfaces->gameEventManager);
     modelRender.init(interfaces->modelRender);
     panel.init(interfaces->panel);
     sound.init(interfaces->sound);
@@ -575,7 +568,6 @@ void Hooks::install() noexcept
     engine.hookAt(82, isPlayingDemo);
     engine.hookAt(101, getScreenAspectRatio);
     engine.hookAt(218, getDemoPlaybackParameters);
-    gameEventManager.hookAt(9, fireEventClientSide);
     modelRender.hookAt(21, drawModelExecute);
     panel.hookAt(41, paintTraverse);
     sound.hookAt(5, emitSound);
@@ -624,7 +616,6 @@ void Hooks::uninstall() noexcept
     client.restore();
     clientMode.restore();
     engine.restore();
-    gameEventManager.restore();
     modelRender.restore();
     panel.restore();
     sound.restore();
