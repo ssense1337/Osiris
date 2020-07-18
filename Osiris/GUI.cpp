@@ -69,12 +69,12 @@ void GUI::updateColors() const noexcept
 
 void GUI::hotkey(int& key) noexcept
 {
-    key ? ImGui::Text("[ %s ]", interfaces->inputSystem->virtualKeyToString(key)) : ImGui::TextUnformatted("[ key ]");
+    key ? ImGui::Text("[ %s ]", interfaces->inputSystem->virtualKeyToString(key)) : ImGui::TextUnformatted("[ เลือกปุ่ม ]");
 
     if (!ImGui::IsItemHovered())
         return;
 
-    ImGui::SetTooltip("Press any key to change keybind");
+    ImGui::SetTooltip("กดปุ่มใดก็ได้เพื่อเลือกปุ่ม");
     ImGuiIO& io = ImGui::GetIO();
     for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
         if (ImGui::IsKeyPressed(i) && i != config->misc.menuKey)
@@ -96,7 +96,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     static int currentCategory{ 0 };
     ImGui::PushItemWidth(110.0f);
     ImGui::PushID(0);
-    ImGui::Combo("", &currentCategory, "ทั้งหมด\0Pistols\0Heavy\0SMG\0Rifles\0");
+    ImGui::Combo("", &currentCategory, "ทั้งหมด\0ปืนพก\0ปืนกลหนัก\0ปืนกลเบา\0ปืนไรเฟิล\0");
     ImGui::PopID();
     ImGui::SameLine();
     static int currentWeapon{ 0 };
@@ -196,7 +196,7 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::PopItemWidth();
     ImGui::PopID();
     ImGui::Checkbox("ล็อคเป้า ", &config->aimbot[currentWeapon].aimlock);
-    ImGui::Checkbox("ไม่สบัดหน้า", &config->aimbot[currentWeapon].silent);
+    ImGui::Checkbox("ไม่สะบัดหน้า (ไม่เนียน)", &config->aimbot[currentWeapon].silent);
     ImGui::Checkbox("ล็อคเป้าเพื่อน", &config->aimbot[currentWeapon].friendlyFire);
     ImGui::Checkbox("ล็อคเป้าเฉพาะที่มองเห็น", &config->aimbot[currentWeapon].visibleOnly);
     ImGui::Checkbox("ล็อคเป้าเฉพาะสโคป", &config->aimbot[currentWeapon].scopedOnly);
@@ -442,7 +442,7 @@ void GUI::renderChamsWindow(bool contentOnly) noexcept
     ImGui::SameLine();
     ImGui::Text("%d", material);
 
-    constexpr std::array categories{ "Allies", "Enemies", "Planting", "Defusing", "Local player", "Weapons", "Hands", "Backtrack", "Sleeves" };
+    constexpr std::array categories{ "พันธมิตร", "ศัตรู", "Planting", "Defusing", "Local player", "Weapons", "Hands", "Backtrack", "Sleeves" };
 
     ImGui::SameLine();
 
@@ -502,7 +502,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
     };
 
     if (ImGui::ListBoxHeader("##list", { 170.0f, 300.0f })) {
-        constexpr std::array categories{ "Enemies", "Allies", "Weapons", "Projectiles", "Loot Crates", "Other Entities" };
+        constexpr std::array categories{ "ศัตรู", "พันธมิตร", "อาวุธ", "ระเบิด", "กล่องโซนอันตราย", "อื่นๆ" };
 
         for (std::size_t i = 0; i < categories.size(); ++i) {
             if (ImGui::Selectable(categories[i], currentCategory == i && std::string_view{ currentItem } == "All")) {
@@ -512,16 +512,16 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
 
             if (ImGui::BeginDragDropSource()) {
                 switch (i) {
-                case 0: case 1: ImGui::SetDragDropPayload("Player", &getConfigPlayer(i, "All"), sizeof(Player), ImGuiCond_Once); break;
-                case 2: ImGui::SetDragDropPayload("Weapon", &config->streamProofESP.weapons["All"], sizeof(Weapon), ImGuiCond_Once); break;
-                case 3: ImGui::SetDragDropPayload("Projectile", &config->streamProofESP.projectiles["All"], sizeof(Projectile), ImGuiCond_Once); break;
+                case 0: case 1: ImGui::SetDragDropPayload("ผู้เล่น", &getConfigPlayer(i, "All"), sizeof(Player), ImGuiCond_Once); break;
+                case 2: ImGui::SetDragDropPayload("อาวุธ", &config->streamProofESP.weapons["All"], sizeof(Weapon), ImGuiCond_Once); break;
+                case 3: ImGui::SetDragDropPayload("ระเบิด", &config->streamProofESP.projectiles["All"], sizeof(Projectile), ImGuiCond_Once); break;
                 default: ImGui::SetDragDropPayload("Entity", &getConfigShared(i, "All"), sizeof(Shared), ImGuiCond_Once); break;
                 }
                 ImGui::EndDragDropSource();
             }
 
             if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Player")) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ผู้เล่น")) {
                     const auto& data = *(Player*)payload->Data;
 
                     switch (i) {
@@ -532,7 +532,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
                     }
                 }
 
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Weapon")) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("อาวุธ")) {
                     const auto& data = *(Weapon*)payload->Data;
 
                     switch (i) {
@@ -543,7 +543,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
                     }
                 }
 
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Projectile")) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ระเบิด")) {
                     const auto& data = *(Projectile*)payload->Data;
 
                     switch (i) {
@@ -573,7 +573,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
             const auto items = [](std::size_t category) noexcept -> std::vector<const char*> {
                 switch (category) {
                 case 0:
-                case 1: return { "Visible", "Occluded" };
+                case 1: return { "ที่มองเห็น", "ที่มองไม่เห็น" };
                 case 2: return { "Pistols", "SMGs", "Rifles", "Sniper Rifles", "Shotguns", "Machineguns", "Grenades", "Melee", "Other" };
                 case 3: return { "Flashbang", "HE Grenade", "Breach Charge", "Bump Mine", "Decoy Grenade", "Molotov", "TA Grenade", "Smoke Grenade", "Snowball" };
                 case 4: return { "Pistol Case", "Light Case", "Heavy Case", "Explosive Case", "Tools Case", "Cash Dufflebag" };
@@ -728,7 +728,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
         ImGui::Checkbox("เปิด", &sharedConfig.enabled);
         ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260.0f);
         ImGui::SetNextItemWidth(220.0f);
-        if (ImGui::BeginCombo("Font", config->systemFonts[sharedConfig.font.index].c_str())) {
+        if (ImGui::BeginCombo("ฟอนต์", config->systemFonts[sharedConfig.font.index].c_str())) {
             for (size_t i = 0; i < config->systemFonts.size(); i++) {
                 bool isSelected = config->systemFonts[i] == sharedConfig.font.name;
                 if (ImGui::Selectable(config->systemFonts[i].c_str(), isSelected, 0, { 250.0f, 0.0f })) {
@@ -768,7 +768,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
 
         ImGui::PopID();
 
-        ImGuiCustom::colorPicker("Name", sharedConfig.name);
+        ImGuiCustom::colorPicker("ชื่อ", sharedConfig.name);
         ImGui::SameLine(spacing);
 
         if (currentCategory < 2) {
@@ -783,7 +783,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
             ImGui::Checkbox("เมื่อมองเห็น", &playerConfig.spottedOnly);
         } else if (currentCategory == 2) {
             auto& weaponConfig = config->streamProofESP.weapons[currentItem];
-            ImGuiCustom::colorPicker("Ammo", weaponConfig.ammo);
+            ImGuiCustom::colorPicker("กระสุน", weaponConfig.ammo);
         } else if (currentCategory == 3) {
             auto& trails = config->streamProofESP.projectiles[currentItem].trails;
 
@@ -800,7 +800,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
                     ImGuiCustom::colorPicker(name, trail);
                     ImGui::SameLine(150.0f);
                     ImGui::SetNextItemWidth(95.0f);
-                    ImGui::Combo("", &trail.type, "Line\0Circles\0Filled Circles\0");
+                    ImGui::Combo("", &trail.type, "เส้น\0วงกลม\0วงกลมทึบ\0");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(95.0f);
                     ImGui::InputFloat("เวลา", &trail.time, 0.1f, 0.5f, "%.1fs");
@@ -1341,8 +1341,8 @@ void GUI::renderGuiStyle2() noexcept
             ImGui::PushFont(fonts.tahoma);
             const char* tabbname[] = {
                 "อัพเดต",
-                "ศูนย์เล็ง",
-                "รายละเอียด",
+                "ล็อคเป้า",
+                "มอง",
                 "ตั้งค่า"
             };
             ImGuiStyle* style = &ImGui::GetStyle();
