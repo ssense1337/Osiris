@@ -4,7 +4,7 @@ name: Windows
 
 # Controls when the action will run. Triggers the workflow on push or pull request 
 # events but only for the master branch
-on: [push, pull_request]
+on: [push]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,7 +24,7 @@ jobs:
     - uses: dev-drprasad/delete-tag-and-release@v0.1.2
       with:
         delete_release: true # default: false
-        tag_name: v1.0 # tag name to delete
+        tag_name: thai # tag name to delete
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # Build command
@@ -38,8 +38,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v1.0
-        release_name: v1.0
+        tag_name: thai
+        release_name: thai
         draft: false
         prerelease: false
     # Upload DLL to Release
