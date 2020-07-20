@@ -413,7 +413,8 @@ static void from_json(const json& j, item_setting& i)
     read_number(j, "StatTrak", i.stat_trak);
     read_number(j, "Wear", i.wear);
 
-    // if (skinChangerJson.isMember("custom_name")) strcpy_s(skinChangerConfig.custom_name, sizeof(skinChangerConfig.custom_name), skinChangerJson["custom_name"].asCString());
+    if (j.contains("Custom name"))
+        strncpy_s(i.custom_name, j["Custom name"].get<std::string>().c_str(), _TRUNCATE);
 
     read(j, "Stickers", i.stickers);
 }
@@ -1063,12 +1064,14 @@ static void to_json(json& j, const item_setting& o)
 
 void removeEmptyObjects(json& j) noexcept
 {
-    for (auto& el : j.items()) {
-        auto& val = el.value();
+    for (auto it = j.begin(); it != j.end();) {
+        auto& val = it.value();
         if (val.is_object())
             removeEmptyObjects(val);
         if (val.empty())
-            j.erase(el.key());
+            it = j.erase(it);
+        else
+            ++it;
     }
 }
 
