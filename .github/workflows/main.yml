@@ -28,7 +28,7 @@ jobs:
     - uses: dev-drprasad/delete-tag-and-release@v0.1.2
       with:
         delete_release: true # default: false
-        tag_name: thai # tag name to delete
+        tag_name: thai-1.0 # tag name to delete
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # Create Release
@@ -38,7 +38,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: thai
+        tag_name: thai-1.0
         release_name: thai
         draft: false
         prerelease: false
