@@ -1520,7 +1520,7 @@ void GUI::renderGuiStyle2() noexcept
         if (tabb == 0) {
             ImGui::PushItemWidth(110.0f);
             ImGui::Text(" ");
-            ImGui::TextUnformatted("อัพเดตเมื่อ: " __DATE__ " " __TIME__ "(GMT +0)");
+            ImGui::TextUnformatted("อัพเดตเมื่อ: " __DATE__ " " __TIME__ "(GMT +7)");
             ImGui::Text(" ");
             ImGui::Text("โอซีริส (Osiris)");
             ImGui::Text("1. ควรใช้ด้วยความระมัดระวังหากโดนแบนทางเราจะไม่รับผิดชอบใดๆทั้งสิ้น");
