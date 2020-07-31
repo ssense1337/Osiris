@@ -20,6 +20,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    - name: Setup timezone
+      uses: zcong1993/setup-timezone@master
+      with:
+        timezone: Asia/Bangkok
     # Build command
     - name: Build
       shell: cmd
