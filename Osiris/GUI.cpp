@@ -1380,14 +1380,17 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
     if (!contentOnly) {
         if (!window.config)
             return;
-        ImGui::SetNextWindowSize({ 290.0f, 200.0f });
+        ImGui::SetNextWindowSize({ 290.0f, 0.0f });
         ImGui::Begin("คอนฟิก", &window.config, windowFlags);
     }
 
     ImGui::Columns(2, nullptr, false);
     ImGui::SetColumnOffset(125, 300.0f);
 
-    ImGui::PushItemWidth(308.0f);
+    static bool incrementalLoad = false;
+    ImGui::Checkbox("Incremental Load", &incrementalLoad);
+
+    ImGui::PushItemWidth(160.0f);
 
     if (ImGui::Button("โหลดคอนฟิก", { 308.0f, 25.0f }))
         config->listConfigs();
@@ -1449,8 +1452,8 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
             ImGui::EndPopup();
         }
         if (currentConfig != -1) {
-            if (ImGui::Button("โหลดที่เลือก", { 308.0f, 25.0f })) {
-                config->load(currentConfig);
+            if (ImGui::Button("โหลดที่เลือก", { 100.0f, 25.0f })) {
+                config->load(currentConfig, incrementalLoad);
                 updateColors();
                 SkinChanger::scheduleHudUpdate();
                 Misc::updateClanTag(true);
