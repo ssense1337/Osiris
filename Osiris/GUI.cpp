@@ -1390,13 +1390,17 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
     if (!contentOnly) {
         if (!window.config)
             return;
-        ImGui::SetNextWindowSize({ 290.0f, 200.0f });
+        ImGui::SetNextWindowSize({ 290.0f, 0.0f });
         ImGui::Begin("Config", &window.config, windowFlags);
     }
 
     ImGui::Columns(2, nullptr, false);
     ImGui::SetColumnOffset(125, 300.0f);
 
+    static bool incrementalLoad = false;
+    ImGui::Checkbox("Incremental Load", &incrementalLoad);
+
+    ImGui::PushItemWidth(160.0f);
 
     if (ImGui::Button("Reload configs", { 160.0f, 25.0f }))
         config->listConfigs();
@@ -1460,7 +1464,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
         }
         if (currentConfig != -1) {
             if (ImGui::Button("Load selected", { 100.0f, 25.0f })) {
-                config->load(currentConfig);
+                config->load(currentConfig, incrementalLoad);
                 updateColors();
                 SkinChanger::scheduleHudUpdate();
                 Misc::updateClanTag(true);
