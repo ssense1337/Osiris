@@ -44,12 +44,12 @@ void SkinChanger::initializeKits() noexcept
     for (int i = 0; i <= memory->itemSystem()->getItemSchema()->paintKits.lastAlloc; i++) {
         const auto paintKit = memory->itemSystem()->getItemSchema()->paintKits.memory[i].value;
 
-        if (paintKit->id == 9001) // ignore workshop_default
+        if (paintKit->id == 0 || paintKit->id == 9001) // ignore workshop_default
             continue;
 
-        std::string name = interfaces->localize->findAsUTF8(paintKit->itemName.buffer + 1);
+        std::string name = interfaces->localize->findAsUTF8(paintKit->itemName.data() + 1);
         if (paintKit->id < 10000) {
-            if (auto pos = gameItems.find('_' + std::string{ paintKit->name.buffer } +'='); pos != std::string::npos && gameItems.substr(pos + paintKit->name.length).find('_' + std::string{ paintKit->name.buffer } +'=') == std::string::npos) {
+            if (auto pos = gameItems.find('_' + std::string{ paintKit->name.data() } +'='); pos != std::string::npos && gameItems.substr(pos + paintKit->name.length).find('_' + std::string{ paintKit->name.data() } +'=') == std::string::npos) {
                 if (auto weaponName = gameItems.rfind("weapon_", pos); weaponName != std::string::npos) {
                     name += ' ';
                     name += '(' + gameItems.substr(weaponName + 7, pos - weaponName - 7) + ')';
@@ -57,19 +57,19 @@ void SkinChanger::initializeKits() noexcept
             }
             skinKits.emplace_back(paintKit->id, name, toUpperWide(name, facet));
         } else {
-            std::string_view gloveName{ paintKit->name.buffer };
+            std::string_view gloveName{ paintKit->name.data() };
             name += ' ';
             name += '(' + std::string{ gloveName.substr(0, gloveName.find('_')) } +')';
             gloveKits.emplace_back(paintKit->id, name, toUpperWide(name, facet));
         }
     }
 
-    std::sort(skinKits.begin(), skinKits.end());
+    std::sort(skinKits.begin() + 1, skinKits.end());
     std::sort(gloveKits.begin(), gloveKits.end());
 
     for (int i = 0; i <= memory->itemSystem()->getItemSchema()->stickerKits.lastAlloc; i++) {
         const auto stickerKit = memory->itemSystem()->getItemSchema()->stickerKits.memory[i].value;
-        std::string name = interfaces->localize->findAsUTF8(stickerKit->id != 242 ? stickerKit->itemName.buffer + 1 : "StickerKit_dhw2014_teamdignitas_gold");
+        std::string name = interfaces->localize->findAsUTF8(stickerKit->id != 242 ? stickerKit->itemName.data() + 1 : "StickerKit_dhw2014_teamdignitas_gold");
         stickerKits.emplace_back(stickerKit->id, name, toUpperWide(name, facet));
     }
 
