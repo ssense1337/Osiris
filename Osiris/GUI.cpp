@@ -793,6 +793,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
             ImGui::Combo("รูปร่างของกรอบ", &sharedConfig.box.type, "2 มิติ\0""2 มิติ *มุม\0""3 มิติ\0""3 มิติ *มุม\0");
             ImGui::SetNextItemWidth(275.0f);
             ImGui::SliderFloat3("Scale", sharedConfig.box.scale.data(), 0.0f, 0.50f, "%.2f");
+            ImGuiCustom::colorPicker("Fill", sharedConfig.box.fill);
             ImGui::EndPopup();
         }
 
@@ -825,6 +826,7 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
                 ImGui::Combo("Type", &playerConfig.headBox.type, "2D\0" "2D corners\0" "3D\0" "3D corners\0");
                 ImGui::SetNextItemWidth(275.0f);
                 ImGui::SliderFloat3("Scale", playerConfig.headBox.scale.data(), 0.0f, 0.50f, "%.2f");
+                ImGuiCustom::colorPicker("Fill", playerConfig.headBox.fill);
                 ImGui::EndPopup();
             }
 
