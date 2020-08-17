@@ -932,14 +932,14 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
     ImGui::SliderFloat("", &config->visuals.brightness, 0.0f, 1.0f, "แสง: %.2f");
     ImGui::PopID();
     ImGui::PopItemWidth();
-    ImGui::Combo("ท้องฟ้า", &config->visuals.skybox, "Default\0cs_baggage_skybox_\0cs_tibet\0embassy\0italy\0jungle\0nukeblank\0office\0sky_cs15_daylight01_hdr\0sky_cs15_daylight02_hdr\0sky_cs15_daylight03_hdr\0sky_cs15_daylight04_hdr\0sky_csgo_cloudy01\0sky_csgo_night_flat\0sky_csgo_night02\0sky_day02_05_hdr\0sky_day02_05\0sky_dust\0sky_l4d_rural02_ldr\0sky_venice\0vertigo_hdr\0vertigo\0vertigoblue_hdr\0vietnam\0");
+    ImGui::Combo("ท้องฟ้า", &config->visuals.skybox, Helpers::getSkyboxes().data(), Helpers::getSkyboxes().size());
     ImGuiCustom::colorPicker("ปรับสีแม็พ", config->visuals.world);
     ImGuiCustom::colorPicker("ปรับสีท้องฟ้า", config->visuals.sky);
     ImGui::Checkbox("ควงปืน Deagle", &config->visuals.deagleSpinner);
-    ImGui::Combo("เอฟเฟคหน้าจอ", &config->visuals.screenEffect, "ปกติ\0Drone cam\0Drone cam with noise\0Underwater\0Healthboost\0Dangerzone\0");
-    ImGui::Combo("เอฟเฟคตอนยิง", &config->visuals.hitEffect, "ปกติ\0Drone cam\0Drone cam with noise\0Underwater\0Healthboost\0Dangerzone\0");
+    ImGui::Combo("เอฟเฟคหน้าจอ", &config->visuals.screenEffect, "None\0Drone cam\0Drone cam with noise\0Underwater\0Healthboost\0Dangerzone\0");
+    ImGui::Combo("เอฟเฟคตอนยิง", &config->visuals.hitEffect, "None\0Drone cam\0Drone cam with noise\0Underwater\0Healthboost\0Dangerzone\0");
     ImGui::SliderFloat("ระยะเวลาเอฟเฟคตอนยิง", &config->visuals.hitEffectTime, 0.1f, 1.5f, "%.2fs");
-    ImGui::Combo("ขึ้นกากบาทเมื่อยิงโดน", &config->visuals.hitMarker, "ปกติ\0กากบาท\0");
+    ImGui::Combo("ขึ้นกากบาทเมื่อยิงโดน", &config->visuals.hitMarker, "None\0Default (Cross)\0");
     ImGui::SliderFloat("ระยะเวลาขึ้นกากบาท", &config->visuals.hitMarkerTime, 0.1f, 1.5f, "%.2fs");
     ImGui::Checkbox("แก้ไขสีหน้าจอ", &config->visuals.colorCorrection.enabled);
     ImGui::SameLine();
@@ -1282,6 +1282,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     ImGui::SetNextItemWidth(120.0f);
     ImGui::SliderFloat("มุมเดลต้าสูงสุด", &config->misc.maxAngleDelta, 0.0f, 255.0f, "%.2f");
     ImGui::Checkbox("เฟคไพร์ม", &config->misc.fakePrime);
+    ImGui::Checkbox("สลับมือเมื่อถือมีด", &config->misc.oppositeHandKnife);
     ImGui::Checkbox("รายการที่ซื้อ", &config->misc.purchaseList.enabled);
     ImGui::SameLine();
 

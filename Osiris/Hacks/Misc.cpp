@@ -204,6 +204,7 @@ static bool worldToScreen(const Vector& in, ImVec2& out) noexcept
     out = ImGui::GetIO().DisplaySize / 2.0f;
     out.x *= 1.0f + (matrix._11 * in.x + matrix._12 * in.y + matrix._13 * in.z + matrix._14) / w;
     out.y *= 1.0f - (matrix._21 * in.x + matrix._22 * in.y + matrix._23 * in.z + matrix._24) / w;
+    out = ImFloor(out);
     return true;
 }
 
@@ -804,5 +805,31 @@ void Misc::purchaseList(GameEvent* event) noexcept
             }
         }
         ImGui::End();
+    }
+}
+
+void Misc::oppositeHandKnife(FrameStage stage) noexcept
+{
+    if (!config->misc.oppositeHandKnife)
+        return;
+
+    if (!localPlayer)
+        return;
+
+    if (stage != FrameStage::RENDER_START && stage != FrameStage::RENDER_END)
+        return;
+
+    static const auto cl_righthand = interfaces->cvar->findVar("cl_righthand");
+    static bool original;
+
+    if (stage == FrameStage::RENDER_START) {
+        original = cl_righthand->getInt();
+
+        if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
+            if (const auto classId = activeWeapon->getClientClass()->classId; classId == ClassId::Knife || classId == ClassId::KnifeGG)
+                cl_righthand->setValue(!original);
+        }
+    } else {
+        cl_righthand->setValue(original);
     }
 }
