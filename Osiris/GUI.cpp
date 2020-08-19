@@ -831,6 +831,9 @@ void GUI::renderStreamProofESPWindow(bool contentOnly) noexcept
             }
 
             ImGui::PopID();
+        
+            ImGui::SameLine(spacing);
+            ImGui::Checkbox("Health Bar", &playerConfig.healthBar);
         } else if (currentCategory == 2) {
             auto& weaponConfig = config->streamProofESP.weapons[currentItem];
             ImGuiCustom::colorPicker("กระสุน", weaponConfig.ammo);
