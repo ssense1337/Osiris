@@ -13,7 +13,6 @@
 #include "GUI.h"
 #include "Config.h"
 #include "Hacks/Misc.h"
-#include "Hacks/Reportbot.h"
 #include "Hacks/SkinChanger.h"
 #include "Helpers.h"
 #include "Hooks.h"
@@ -109,7 +108,6 @@ void GUI::renderMenuBar() noexcept
         menuBarItem("Sound", window.sound);
         menuBarItem("Style", window.style);
         menuBarItem("Misc", window.misc);
-        menuBarItem("Reportbot", window.reportbot);
         menuBarItem("Config", window.config);
         ImGui::EndMainMenuBar();   
     }
@@ -1303,40 +1301,36 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     }
     ImGui::PopID();
 
+    ImGui::Checkbox("Reportbot", &config->misc.reportbot.enabled);
+    ImGui::SameLine();
+    ImGui::PushID("Reportbot");
+
+    if (ImGui::Button("..."))
+        ImGui::OpenPopup("");
+
+    if (ImGui::BeginPopup("")) {
+        ImGui::PushItemWidth(80.0f);
+        ImGui::Combo("เป้าหมาย", &config->misc.reportbot.target, "ศัตรู\0พันธมิตร\0ทั้งหมด\0");
+        ImGui::InputInt("ดีเลย์ (วิ)", &config->misc.reportbot.delay);
+        config->misc.reportbot.delay = (std::max)(config->misc.reportbot.delay, 1);
+        ImGui::InputInt("รอบ", &config->misc.reportbot.rounds);
+        config->misc.reportbot.rounds = (std::max)(config->misc.reportbot.rounds, 1);
+        ImGui::PopItemWidth();
+        ImGui::Checkbox("การสื่อสารที่ไม่เหมาะสม", &config->misc.reportbot.textAbuse);
+        ImGui::Checkbox("เกรียน", &config->misc.reportbot.griefing);
+        ImGui::Checkbox("มองทะลุ", &config->misc.reportbot.wallhack);
+        ImGui::Checkbox("ล็อคเป้า", &config->misc.reportbot.aimbot);
+        ImGui::Checkbox("อื่นๆ", &config->misc.reportbot.other);
+        if (ImGui::Button("รีเซ็ต"))
+            Misc::resetReportbot();
+        ImGui::EndPopup();
+    }
+    ImGui::PopID();
+
     if (ImGui::Button("ปิดใช้งานเมนู"))
         hooks->uninstall();
 
     ImGui::Columns(1);
-    if (!contentOnly)
-        ImGui::End();
-}
-
-void GUI::renderReportbotWindow(bool contentOnly) noexcept
-{
-    if (!contentOnly) {
-        if (!window.reportbot)
-            return;
-        ImGui::SetNextWindowSize({ 0.0f, 0.0f });
-        ImGui::Begin("รีพอร์ตบอท", &window.reportbot, windowFlags);
-    }
-    ImGui::Checkbox("เปิด", &config->reportbot.enabled);
-    ImGui::SameLine(0.0f, 50.0f);
-    if (ImGui::Button("รีเซ็ต"))
-        Reportbot::reset();
-    ImGui::Separator();
-    ImGui::PushItemWidth(300.0f);
-    ImGui::Combo("เป้าหมาย", &config->reportbot.target, "ศัตรู\0พันธมิตร\0ทั้งหมด\0");
-    ImGui::InputInt("ดีเลย์ (วิ)", &config->reportbot.delay);
-    config->reportbot.delay = (std::max)(config->reportbot.delay, 1);
-    ImGui::InputInt("รอบ", &config->reportbot.rounds);
-    config->reportbot.rounds = (std::max)(config->reportbot.rounds, 1);
-    ImGui::PopItemWidth();
-    ImGui::Checkbox("การสื่อสารที่ไม่เหมาะสม", &config->reportbot.textAbuse);
-    ImGui::Checkbox("เกรียน", &config->reportbot.griefing);
-    ImGui::Checkbox("มองทะลุ", &config->reportbot.wallhack);
-    ImGui::Checkbox("ล็อคเป้า   ", &config->reportbot.aimbot);
-    ImGui::Checkbox("อื่นๆ", &config->reportbot.other);
-
     if (!contentOnly)
         ImGui::End();
 }
@@ -1392,7 +1386,7 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
             ImGui::OpenPopup("Config to reset");
         ImGui::Text(" ");
         if (ImGui::BeginPopup("Config to reset")) {
-            static constexpr const char* names[]{ "Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti aim", "Glow", "Chams", "ESP", "Visuals", "Skin changer", "Sound", "Style", "Misc", "Reportbot" };
+            static constexpr const char* names[]{ "Whole", "Aimbot", "Triggerbot", "Backtrack", "Anti aim", "Glow", "Chams", "ESP", "Visuals", "Skin changer", "Sound", "Style", "Misc" };
             for (int i = 0; i < IM_ARRAYSIZE(names); i++) {
                 if (i == 1) ImGui::Separator();
 
@@ -1411,7 +1405,6 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
                     case 10: config->sound = { }; break;
                     case 11: config->style = { }; updateColors(); break;
                     case 12: config->misc = { };  Misc::updateClanTag(true); break;
-                    case 13: config->reportbot = { }; break;
                     }
                 }
             }
@@ -1605,7 +1598,6 @@ void GUI::renderGuiStyle2() noexcept
         "ธีม",
         "เสียง",
         "อื่นๆ",
-        "รีพอร์ตบอท",
         "คอนฟิก"
             };
             ImGui::BeginGroup();
@@ -1642,9 +1634,6 @@ void GUI::renderGuiStyle2() noexcept
                 renderMiscWindow(true);
                 break;
             case 3:
-                renderReportbotWindow(true);
-                break;
-            case 4:
                 renderConfigWindow(true);
                 break;
             }
