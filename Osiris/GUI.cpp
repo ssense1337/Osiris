@@ -234,10 +234,11 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::Checkbox("ยิงอัตโนมัติเมื่อใช้สโคป", &config->aimbot[currentWeapon].autoScope);
     ImGui::Combo("ตำแหน่งที่ใช้ล็อค", &config->aimbot[currentWeapon].bone, "ใกล้ที่สุด\0ดาเมจเยะสุด\0หัว\0คอ\0ลำตัว\0หน้าอก\0ท้อง\0กระดูกเชิงกราน\0");
     ImGui::NextColumn();
-    ImGui::SliderFloat("ขอบเขตการมองเห็น", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", 2.5f);
+    ImGui::PushItemWidth(240.0f);
+    ImGui::SliderFloat("ขอบเขตการมองเห็น", &config->aimbot[currentWeapon].fov, 0.0f, 255.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
     ImGui::SliderFloat("ความนุ่มนวล", &config->aimbot[currentWeapon].smooth, 1.0f, 100.0f, "%.2f");
-    ImGui::SliderFloat("ความแม่นยำของการล็อค", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "%.5f", 2.0f);
-    ImGui::SliderFloat("ความแม่นยำของการยิง", &config->aimbot[currentWeapon].maxShotInaccuracy, 0.0f, 1.0f, "%.5f", 2.0f);
+    ImGui::SliderFloat("ความแม่นยำของการล็อค", &config->aimbot[currentWeapon].maxAimInaccuracy, 0.0f, 1.0f, "%.5f", ImGuiSliderFlags_Logarithmic);
+    ImGui::SliderFloat("ความแม่นยำของการยิง", &config->aimbot[currentWeapon].maxShotInaccuracy, 0.0f, 1.0f, "%.5f", ImGuiSliderFlags_Logarithmic);
     ImGui::InputInt("ดาเมจต่ำสุด", &config->aimbot[currentWeapon].minDamage);
     config->aimbot[currentWeapon].minDamage = std::clamp(config->aimbot[currentWeapon].minDamage, 0, 250);
     ImGui::Checkbox("หนึ่งนัด หนึ่งศพ", &config->aimbot[currentWeapon].killshot);
@@ -992,8 +993,9 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
         ImGui::Separator();
         ImGui::Columns(2, nullptr, false);
         ImGui::InputInt("สุ่ม", &selected_entry.seed);
-        ImGui::InputInt("จำนวนการฆ่า", &selected_entry.stat_trak);
-        ImGui::SliderFloat("ความชัด", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", 5);
+        ImGui::InputInt("จำนวนการฆ่า StatTrak\u2122", &selected_entry.stat_trak);
+        selected_entry.stat_trak = (std::max)(selected_entry.stat_trak, -1);
+        ImGui::SliderFloat("ความชัด", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", ImGuiSliderFlags_Logarithmic);
 
         static std::string filter;
         ImGui::PushID("Search");
@@ -1109,7 +1111,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
             ImGui::ListBoxFooter();
         }
 
-        ImGui::SliderFloat("ความชัด", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f", 5.0f);
+        ImGui::SliderFloat("ความชัด", &selected_sticker.wear, FLT_MIN, 1.0f, "%.10f", ImGuiSliderFlags_Logarithmic);
         ImGui::SliderFloat("อัตราส่วน", &selected_sticker.scale, 0.1f, 5.0f);
         ImGui::SliderFloat("หมุน", &selected_sticker.rotation, 0.0f, 360.0f);
 
