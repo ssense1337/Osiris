@@ -1286,7 +1286,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     ImGui::SliderFloat("มุมเดลต้าสูงสุด", &config->misc.maxAngleDelta, 0.0f, 255.0f, "%.2f");
     ImGui::Checkbox("เฟคไพร์ม", &config->misc.fakePrime);
     ImGui::Checkbox("สลับมือเมื่อถือมีด", &config->misc.oppositeHandKnife);
-    ImGui::Checkbox("รักษา Killfeed", &config->misc.preserveKillfeed);
+    ImGui::Checkbox("รักษา Killfeed", &config->misc.preserveKillfeed.enabled);
     ImGui::Checkbox("รายการที่ซื้อ", &config->misc.purchaseList.enabled);
     ImGui::SameLine();
 
