@@ -1249,6 +1249,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     if (ImGui::Button("เฟคแบน"))
         Misc::fakeBan(true);
     ImGui::Checkbox("วางระเบิดไว", &config->misc.fastPlant);
+    ImGui::Checkbox("หยุดเดินไว", &config->misc.fastStop);
     ImGuiCustom::colorPicker("เวลาระเบิด", config->misc.bombTimer);
     ImGui::Checkbox("รีโหลดไว", &config->misc.quickReload);
     ImGui::Checkbox("เตรียมลูกโม่", &config->misc.prepareRevolver);
