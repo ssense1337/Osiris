@@ -1,13 +1,27 @@
 #include "Backtrack.h"
 #include "Aimbot.h"
 #include "../Config.h"
+#include "../SDK/ConVar.h"
 #include "../SDK/Entity.h"
 #include "../SDK/FrameStage.h"
+#include "../SDK/GlobalVars.h"
 #include "../SDK/LocalPlayer.h"
+#include "../SDK/NetworkChannel.h"
 #include "../SDK/UserCmd.h"
 
-std::deque<Backtrack::Record> Backtrack::records[65];
-static Backtrack::Cvars cvars;
+std::array<std::deque<Backtrack::Record>, 65> Backtrack::records;
+
+struct Cvars {
+    ConVar* updateRate;
+    ConVar* maxUpdateRate;
+    ConVar* interp;
+    ConVar* interpRatio;
+    ConVar* minInterpRatio;
+    ConVar* maxInterpRatio;
+    ConVar* maxUnlag;
+};
+
+static Cvars cvars;
 
 void Backtrack::update(FrameStage stage) noexcept
 {
