@@ -171,7 +171,7 @@ Free open-source cheat software for **Counter-Strike: Global Offensive** game. D
     * **Kill message** - print message to chat after killing an enemy
     * **Name stealer** - mimic other players names
     * **Custom clantag** - set a custom clantag
-    * **Fast plant** - plants bomb on bombsite border, when holding LMB or `E` key
+    * **Fast plant** - plants bomb on bombsite border, when holding <kbd>LMB</kbd> or <kbd>E</kbd> key
     * **Fast Stop** - stops the player faster than normal
     * **Quick reload** - perform quick weapon switch during reload for faster reload
     * **Prepare revolver [ key ]** - keep revolver cocked, optionally on key
@@ -251,9 +251,15 @@ Press <kbd>INSERT</kbd> while focused on CS:GO window.
 ### Where is my config file saved?
 Configuration files are saved inside `Osiris` folder in your `Documents` folder (`%USERPROFILE%\Documents\Osiris`). The config is in human readable format and can be edited (e.g, using notepad). Sometimes after updates configuration file needs to be deleted and recreated.
 
+### What hooking methods Osiris uses?
+Currently implemented hooking methods are:
+- MinHook - trampoline hook
+- VmtHook - hook a function directly in a vtable
+- VmtSwap - create a copy of a vtable and swap the pointer on the class instance
+
 ## Acknowledgments
 
-* [ocornut](https://github.com/ocornut) and [contributors](https://github.com/ocornut/imgui/graphs/contributors) for creating such amazing GUI library - [imgui](https://github.com/ocornut/imgui).
+* [ocornut](https://github.com/ocornut) and [contributors](https://github.com/ocornut/imgui/graphs/contributors) for creating and maintaining an amazing GUI library - [Dear imgui](https://github.com/ocornut/imgui).
 * [Zer0Mem0ry](https://github.com/Zer0Mem0ry) - for great tutorials on reverse engineering and game hacking
 
 ## License
@@ -264,4 +270,4 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ## See also
 - [Anubis](https://github.com/danielkrupinski/Anubis) - free and open source cheat for CS:GO with configuration compatible with Osiris
-- [GOESP](https://github.com/danielkrupinski/GOESP) - free and open source stream-proof ESP hack for Counter-Strike: Global Offensive, written in modern C++
+- [GOESP](https://github.com/danielkrupinski/GOESP) - free and open source cross-platform streamproof ESP hack for Counter-Strike: Global Offensive, written in modern C++
