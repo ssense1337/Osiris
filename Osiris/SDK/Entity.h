@@ -77,15 +77,9 @@ public:
     VIRTUAL_METHOD(WeaponInfo*, getWeaponData, 460, (), (this))
     VIRTUAL_METHOD(float, getInaccuracy, 482, (), (this))
 
-    auto isPistol() noexcept
-    {
-        return getWeaponType() == WeaponType::Pistol;
-    }
-
-    auto isSniperRifle() noexcept
-    {
-        return getWeaponType() == WeaponType::SniperRifle;
-    }
+    auto isPistol() noexcept { return getWeaponType() == WeaponType::Pistol; }
+    auto isSniperRifle() noexcept { return getWeaponType() == WeaponType::SniperRifle; }
+    auto isGrenade() noexcept { return getWeaponType() == WeaponType::Grenade; }
 
     auto isFullAuto() noexcept
     {
