@@ -934,13 +934,13 @@ void GUI::renderVisualsWindow(bool contentOnly) noexcept
     ImGui::SliderFloat("", &config->visuals.brightness, 0.0f, 1.0f, "แสง: %.2f");
     ImGui::PopID();
     ImGui::PopItemWidth();
-    ImGui::Combo("ท้องฟ้า", &config->visuals.skybox, Helpers::getSkyboxes().data(), Helpers::getSkyboxes().size());
+    ImGui::Combo("ท้องฟ้า", &config->visuals.skybox, Helpers::skyboxList.data(), Helpers::skyboxList.size());
     ImGuiCustom::colorPicker("ปรับสีแม็พ", config->visuals.world);
     ImGuiCustom::colorPicker("ปรับสีท้องฟ้า", config->visuals.sky);
     ImGui::Checkbox("ควงปืน Deagle", &config->visuals.deagleSpinner);
     ImGui::Combo("เอฟเฟคหน้าจอ", &config->visuals.screenEffect, "None\0Drone cam\0Drone cam with noise\0Underwater\0Healthboost\0Dangerzone\0");
     ImGui::Combo("เอฟเฟคตอนยิง", &config->visuals.hitEffect, "None\0Drone cam\0Drone cam with noise\0Underwater\0Healthboost\0Dangerzone\0");
-    ImGui::SliderFloat("ระยะเวลาเอฟเฟคตอนยิง", &config->visuals.hitEffectTime, 0.1f, 1.5f, "%.2fs");
+    ImGui::SliderFloat("ระยะเวลาเอฟเฟคอตอนยิง", &config->visuals.hitEffectTime, 0.1f, 1.5f, "%.2fs");
     ImGui::Combo("ขึ้นกากบาทเมื่อยิงโดน", &config->visuals.hitMarker, "None\0Default (Cross)\0");
     ImGui::SliderFloat("ระยะเวลาขึ้นกากบาท", &config->visuals.hitMarkerTime, 0.1f, 1.5f, "%.2fs");
     ImGui::Checkbox("แก้ไขสีหน้าจอ", &config->visuals.colorCorrection.enabled);
