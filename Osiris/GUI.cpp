@@ -1214,6 +1214,7 @@ void GUI::renderMiscWindow(bool contentOnly) noexcept
     ImGui::Checkbox("แสดงชื่อในโอเวอร์วอช", &config->misc.revealSuspect);
     ImGuiCustom::colorPicker("รายชื่อคนดู", config->misc.spectatorList);
     ImGuiCustom::colorPicker("ลายน้ำ", config->misc.watermark);
+    ImGuiCustom::colorPicker("แสดงศัตรูที่ไม่อยู่ในหน้าจอ", config->misc.offscreenEnemies.color, &config->misc.offscreenEnemies.enabled);
     ImGui::Checkbox("แก้อนิเมชั่น LOD", &config->misc.fixAnimationLOD);
     ImGui::Checkbox("แก้โครงกระดูก", &config->misc.fixBoneMatrix);
     ImGui::Checkbox("แก้การเคลื่อนไหว", &config->misc.fixMovement);
