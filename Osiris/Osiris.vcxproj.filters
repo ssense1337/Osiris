@@ -98,9 +98,6 @@
     <ClCompile Include="SDK\GlobalVars.cpp">
       <Filter>SDK</Filter>
     </ClCompile>
-    <ClCompile Include="nSkinz\config_.cpp">
-      <Filter>nSkinz</Filter>
-    </ClCompile>
     <ClCompile Include="nSkinz\item_definitions.cpp">
       <Filter>nSkinz</Filter>
     </ClCompile>
@@ -323,9 +320,6 @@
       <Filter>nSkinz</Filter>
     </ClInclude>
     <ClInclude Include="nSkinz\item_definitions.hpp">
-      <Filter>nSkinz</Filter>
-    </ClInclude>
-    <ClInclude Include="nSkinz\config_.hpp">
       <Filter>nSkinz</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Localize.h">
