@@ -982,8 +982,13 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
         if (!window.skinChanger)
             return;
         ImGui::SetNextWindowSize({ 700.0f, 0.0f });
-        ImGui::Begin("เปลี่ยนสกิน", &window.skinChanger, windowFlags);
+        if (!ImGui::Begin("เปลี่ยนสกิน", &window.skinChanger, windowFlags)) {
+            ImGui::End();
+            return;
+        }
     }
+
+    SkinChanger::initializeKits();
 
     static auto itemIndex = 0;
 
@@ -1060,7 +1065,7 @@ void GUI::renderSkinChangerWindow(bool contentOnly) noexcept
     {
         ImGui::PushID("สติ๊กเกอร์");
 
-        static auto selectedStickerSlot = 0;
+        static std::size_t selectedStickerSlot = 0;
 
         ImGui::PushItemWidth(-1);
 

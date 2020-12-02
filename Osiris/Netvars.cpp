@@ -4,8 +4,9 @@
 #include "SDK/Client.h"
 #include "SDK/ClientClass.h"
 #include "SDK/Entity.h"
-#include "SDK/Recv.h"
 #include "SDK/ModelInfo.h"
+#include "SDK/Platform.h"
+#include "SDK/Recv.h"
 
 static int random(int min, int max) noexcept
 {
@@ -14,7 +15,7 @@ static int random(int min, int max) noexcept
 
 static std::unordered_map<uint32_t, std::pair<recvProxy, recvProxy*>> proxies;
 
-static void __cdecl spottedHook(recvProxyData& data, void* arg2, void* arg3) noexcept
+static void __CDECL spottedHook(recvProxyData& data, void* arg2, void* arg3) noexcept
 {
     if (config->misc.radarHack)
         data.value._int = 1;
@@ -162,15 +163,17 @@ static int get_new_animation(const uint32_t model, const int sequence) noexcept
     }
 }
 
-static void __cdecl viewModelSequence(recvProxyData& data, void* arg2, void* arg3) noexcept
+static void __CDECL viewModelSequence(recvProxyData& data, void* arg2, void* arg3) noexcept
 {
     if (localPlayer) {
         if (const auto activeWeapon = localPlayer->getActiveWeapon()) {
             if (config->visuals.deagleSpinner && activeWeapon->getClientClass()->classId == ClassId::Deagle && data.value._int == 7)
                 data.value._int = 8;
 
-            if (const auto weapon_info = game_data::get_weapon_info(activeWeapon->itemDefinitionIndex()))
-                data.value._int = get_new_animation(fnv::hashRuntime(weapon_info->model), data.value._int);
+            if (const auto weapon_info = game_data::get_weapon_info(activeWeapon->itemDefinitionIndex())) {
+                if (const auto active_conf = get_by_definition_index(WEAPON_KNIFE); active_conf && active_conf->definition_override_index)
+                    data.value._int = get_new_animation(fnv::hashRuntime(weapon_info->model), data.value._int);
+            }
         }
     }
     constexpr auto hash{ fnv::hash("CBaseViewModel->m_nSequence") };
