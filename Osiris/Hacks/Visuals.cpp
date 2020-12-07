@@ -72,7 +72,28 @@ void Visuals::playerModel(FrameStage stage) noexcept
         "models/player/custom_player/legacy/tm_balkan_variante.mdl",
         "models/player/custom_player/legacy/tm_jumpsuit_varianta.mdl",
         "models/player/custom_player/legacy/tm_jumpsuit_variantb.mdl",
-        "models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl"
+        "models/player/custom_player/legacy/tm_jumpsuit_variantc.mdl",
+
+        "models/player/custom_player/legacy/tm_phoenix_varianti.mdl",
+        "models/player/custom_player/legacy/ctm_st6_variantj.mdl",
+        "models/player/custom_player/legacy/ctm_st6_variantl.mdl",
+        "models/player/custom_player/legacy/tm_balkan_variantk.mdl",
+        "models/player/custom_player/legacy/tm_balkan_variantl.mdl",
+        "models/player/custom_player/legacy/ctm_swat_variante.mdl",
+        "models/player/custom_player/legacy/ctm_swat_variantf.mdl",
+        "models/player/custom_player/legacy/ctm_swat_variantg.mdl",
+        "models/player/custom_player/legacy/ctm_swat_varianth.mdl",
+        "models/player/custom_player/legacy/ctm_swat_varianti.mdl",
+        "models/player/custom_player/legacy/ctm_swat_variantj.mdl",
+        "models/player/custom_player/legacy/tm_professional_varf.mdl",
+        "models/player/custom_player/legacy/tm_professional_varf1.mdl",
+        "models/player/custom_player/legacy/tm_professional_varf2.mdl",
+        "models/player/custom_player/legacy/tm_professional_varf3.mdl",
+        "models/player/custom_player/legacy/tm_professional_varf4.mdl",
+        "models/player/custom_player/legacy/tm_professional_varg.mdl",
+        "models/player/custom_player/legacy/tm_professional_varh.mdl",
+        "models/player/custom_player/legacy/tm_professional_vari.mdl",
+        "models/player/custom_player/legacy/tm_professional_varj.mdl"
         };
 
         switch (team) {
@@ -153,7 +174,7 @@ void Visuals::thirdperson() noexcept
     static bool isInThirdperson{ true };
     static float lastTime{ 0.0f };
 
-#ifdef _WIN33
+#ifdef _WIN32
     if (GetAsyncKeyState(config->visuals.thirdpersonKey) && memory->globalVars->realtime - lastTime > 0.5f) {
         isInThirdperson = !isInThirdperson;
         lastTime = memory->globalVars->realtime;
@@ -214,6 +235,8 @@ void Visuals::removeGrass(FrameStage stage) noexcept
         switch (fnv::hashRuntime(interfaces->engine->getLevelName())) {
         case fnv::hash("dz_blacksite"): return "detail/detailsprites_survival";
         case fnv::hash("dz_sirocco"): return "detail/dust_massive_detail_sprites";
+        case fnv::hash("coop_autumn"): return "detail/autumn_detail_sprites";
+        case fnv::hash("dz_frostbite"): return "ski/detail/detailsprites_overgrown_ski";
         // dz_junglety has been removed in 7/23/2020 patch
         // case fnv::hash("dz_junglety"): return "detail/tropical_grass";
         default: return nullptr;
