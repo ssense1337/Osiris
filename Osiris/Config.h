@@ -9,6 +9,7 @@
 #include "imgui/imgui.h"
 #include "Hacks/SkinChanger.h"
 #include "ConfigStructs.h"
+#include "InputUtil.h"
 
 class Config {
 public:
@@ -199,9 +200,9 @@ public:
     } style;
 
     struct Misc {
-        Misc() { }
+        Misc() { clanTag[0] = '\0'; }
 
-        int menuKey{ 0x2D }; // VK_INSERT
+        KeyBind menuKey = KeyBind::INSERT;
         bool antiAfkKick{ false };
         bool autoStrafe{ false };
         bool bunnyHop{ false };
