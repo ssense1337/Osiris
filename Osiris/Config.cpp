@@ -8,6 +8,7 @@
 
 #include "Config.h"
 #include "Helpers.h"
+#include "SDK/Platform.h"
 
 #ifdef _WIN32
 int CALLBACK fontCallback(const LOGFONTW* lpelfe, const TEXTMETRICW*, DWORD, LPARAM lParam)
@@ -304,9 +305,6 @@ static void from_json(const json& j, ImVec2& v)
 static void from_json(const json& j, Config::Aimbot& a)
 {
     read(j, "Enabled", a.enabled);
-    read(j, "On key", a.onKey);
-    read(j, "Key", a.key);
-    read(j, "Key mode", a.keyMode);
     read(j, "Aimlock", a.aimlock);
     read(j, "Silent", a.silent);
     read(j, "Friendly fire", a.friendlyFire);
@@ -627,6 +625,10 @@ void Config::load(size_t id, bool incremental) noexcept
         reset();
 
     read(j, "Aimbot", aimbot);
+    read(j, "Aimbot On key", aimbotOnKey);
+    read(j, "Aimbot Key", aimbotKey);
+    read(j, "Aimbot Key mode", aimbotKeyMode);
+
     read(j, "Triggerbot", triggerbot);
     read<value_t::object>(j, "Backtrack", backtrack);
     read<value_t::object>(j, "Anti aim", antiAim);
@@ -781,9 +783,6 @@ static void to_json(json& j, const ImVec2& o, const ImVec2& dummy = {})
 static void to_json(json& j, const Config::Aimbot& o, const Config::Aimbot& dummy = {})
 {
     WRITE("Enabled", enabled);
-    WRITE("On key", onKey);
-    WRITE("Key", key);
-    WRITE("Key mode", keyMode);
     WRITE("Aimlock", aimlock);
     WRITE("Silent", silent);
     WRITE("Friendly fire", friendlyFire);
@@ -1116,13 +1115,16 @@ void removeEmptyObjects(json& j) noexcept
 
 void Config::save(size_t id) const noexcept
 {
-    std::error_code ec;
-    std::filesystem::create_directory(path, ec);
+    createConfigDir();
 
     if (std::ofstream out{ path / (const char8_t*)configs[id].c_str() }; out.good()) {
         json j;
 
         j["Aimbot"] = aimbot;
+        j["Aimbot On key"] = aimbotOnKey;
+        j["Aimbot Key"] = aimbotKey;
+        j["Aimbot Key mode"] = aimbotKeyMode;
+
         j["Triggerbot"] = triggerbot;
         j["Backtrack"] = backtrack;
         j["Anti aim"] = antiAim;
@@ -1186,6 +1188,17 @@ void Config::listConfigs() noexcept
         std::filesystem::directory_iterator{ },
         std::back_inserter(configs),
         [](const auto& entry) { return std::string{ (const char*)entry.path().filename().u8string().c_str() }; });
+}
+
+void Config::createConfigDir() const noexcept
+{
+    std::error_code ec; std::filesystem::create_directory(path, ec);
+}
+
+void Config::openConfigDir() const noexcept
+{
+    createConfigDir();
+    int ret = std::system((WIN32_LINUX("start ", "xdg-open ") + path.string()).c_str());
 }
 
 void Config::scheduleFontLoad(const std::string& name) noexcept
