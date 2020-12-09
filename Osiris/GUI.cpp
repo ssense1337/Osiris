@@ -248,14 +248,14 @@ void GUI::renderAimbotWindow(bool contentOnly) noexcept
     ImGui::Checkbox("เปิด", &config->aimbot[currentWeapon].enabled);
     ImGui::Separator();
     ImGui::Columns(2, nullptr, false);
-    ImGui::SetColumnOffset(125, 300.0f);
-    ImGui::Checkbox("เลือกปุ่ม", &config->aimbot[currentWeapon].onKey);
+    ImGui::SetColumnOffset(1, 220.0f);
+    ImGui::Checkbox("ล็อคตอนกดปุ่ม", &config->aimbotOnKey);
     ImGui::SameLine();
-    hotkey(config->aimbot[currentWeapon].key);
+    hotkey(config->aimbotKey);
     ImGui::SameLine();
     ImGui::PushID(2);
     ImGui::PushItemWidth(70.0f);
-    ImGui::Combo("", &config->aimbot[currentWeapon].keyMode, "กดค้าง\0เปิด/ปิด\0");
+    ImGui::Combo("", &config->aimbotKeyMode, "กดค้าง\0สลับ\0");
     ImGui::PopItemWidth();
     ImGui::PopID();
     ImGui::Checkbox("ล็อคเป้า ", &config->aimbot[currentWeapon].aimlock);
@@ -1383,8 +1383,11 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
     if (!contentOnly) {
         if (!window.config)
             return;
-        ImGui::SetNextWindowSize({ 290.0f, 0.0f });
-        ImGui::Begin("คอนฟิก", &window.config, windowFlags);
+        ImGui::SetNextWindowSize({ 320.0f, 0.0f });
+        if (!ImGui::Begin("คอนฟิก", &window.config, windowFlags)) {
+            ImGui::End();
+            return;
+        }
     }
 
     ImGui::Columns(2, nullptr, false);
@@ -1395,16 +1398,21 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 
     ImGui::PushItemWidth(160.0f);
 
-    if (ImGui::Button("โหลดคอนฟิก", { 308.0f, 25.0f }))
-        config->listConfigs();
-
     auto& configItems = config->getConfigs();
     static int currentConfig = -1;
 
-    if (static_cast<size_t>(currentConfig) >= configItems.size())
-        currentConfig = -1;
-
     static std::string buffer;
+
+    timeToNextConfigRefresh -= ImGui::GetIO().DeltaTime;
+    if (timeToNextConfigRefresh <= 0.0f) {
+        config->listConfigs();
+        if (const auto it = std::find(configItems.begin(), configItems.end(), buffer); it != configItems.end())
+            currentConfig = std::distance(configItems.begin(), it);
+        timeToNextConfigRefresh = 0.1f;
+    }
+
+    if (static_cast<std::size_t>(currentConfig) >= configItems.size())
+        currentConfig = -1;
 
     if (ImGui::ListBox("", &currentConfig, [](void* data, int idx, const char** out_text) {
         auto& vector = *static_cast<std::vector<std::string>*>(data);
@@ -1422,7 +1430,10 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
 
         ImGui::PushItemWidth(100.0f);
 
-        if (ImGui::Button("สร้างคอนฟิก", { 150.0f, 25.0f }))
+        if (ImGui::Button("เปิดโฟลเดอร์คอนฟิกy"))
+            config->openConfigDir();
+
+        if (ImGui::Button("สร้างคอนฟิก", { 100.0f, 25.0f }))
             config->add(buffer.c_str());
         ImGui::SameLine();
         if (ImGui::Button("รีเซ็ทคอนฟิก", { 150.0f, 25.0f }))
@@ -1464,6 +1475,12 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
                 config->save(currentConfig);
             if (ImGui::Button("ลบที่เลือก", { 308.0f, 25.0f }))
                 config->remove(currentConfig);
+
+                if (static_cast<std::size_t>(currentConfig) < configItems.size())
+                    buffer = configItems[currentConfig];
+                else
+                    buffer.clear();
+            }
         }
         ImGui::Columns(1);
         if (!contentOnly)

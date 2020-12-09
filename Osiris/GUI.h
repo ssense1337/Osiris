@@ -53,6 +53,8 @@ private:
         ImFont* tahoma = nullptr;
         ImFont* segoeui = nullptr;
     } fonts;
+
+    float timeToNextConfigRefresh = 0.1f;
 };
 
 inline std::unique_ptr<GUI> gui;
