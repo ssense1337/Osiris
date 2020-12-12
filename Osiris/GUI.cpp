@@ -1481,7 +1481,6 @@ void GUI::renderConfigWindow(bool contentOnly) noexcept
                 else
                     buffer.clear();
             }
-        }
         ImGui::Columns(1);
         if (!contentOnly)
             ImGui::End();
