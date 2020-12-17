@@ -7,6 +7,7 @@
 [![Issues](https://img.shields.io/github/issues/danielkrupinski/Osiris.svg?style=plastic)](https://github.com/danielkrupinski/Osiris/issues)
 [![PayPal](https://img.shields.io/badge/donate-PayPal-104098.svg?style=plastic&logo=PayPal)](https://paypal.me/DanielK19)
 <br>![Windows](https://github.com/danielkrupinski/Osiris/workflows/Windows/badge.svg?branch=master&event=push)
+![Linux](https://github.com/danielkrupinski/Osiris/workflows/Linux/badge.svg?branch=master&event=push)
 
 ซอฟต์แวร์โอเพนซอร์ซฟรี สำหรับโกงสำหรับเกม Counter-Strike: Global Offensive เข้ากันได้กับเกมเวอร์ชั่นล่าสุดบน Steam
 
