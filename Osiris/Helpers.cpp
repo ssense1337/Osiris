@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cwctype>
 #include <tuple>
 
 #include "imgui/imgui.h"
@@ -56,4 +57,18 @@ ImWchar* Helpers::getFontGlyphRanges() noexcept
         builder.BuildRanges(&ranges);
     }
     return ranges.Data;
+}
+
+std::wstring Helpers::toWideString(const std::string& str) noexcept
+{
+    std::wstring upperCase(str.length(), L'\0');
+    if (const auto newLen = std::mbstowcs(upperCase.data(), str.c_str(), upperCase.length()); newLen != static_cast<std::size_t>(-1))
+        upperCase.resize(newLen);
+    return upperCase;
+}
+
+std::wstring Helpers::toUpper(std::wstring str) noexcept
+{
+    std::transform(str.begin(), str.end(), str.begin(), [](wchar_t w) { return std::towupper(w); });
+    return str;
 }
